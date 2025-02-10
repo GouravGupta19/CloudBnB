@@ -1,0 +1,8 @@
+Validations:
+1)client side: ensure data going from frontend to the db/backend is in correct format
+2)server side: db schema is maintained and error handling
+
+Form Validations(client):
+when we enter data in the form, the browser and/or the web server will check to see that the data is in correct format
+and within the constraints set by the application.
+
