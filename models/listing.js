@@ -48,5 +48,13 @@ listingSchema.post("findOneAndDelete", async (listing) => {
 });
 //when this 'listing' will be deleted then , all the reviews in the 'reviews' collection whose _id matches with anyone in the 'listing.reviews' array, will also be deleted
 
+//one more analogous example
+// customerSchema.post("findOneAndDelete", async (customer) => {
+//   if (customer.orders.length) {
+//     let res = await Order.deleteMany({ _id: { $in: customer.orders } });
+//     console.log(res);
+//   }
+// });
+
 const Listing = mongoose.model("Listing", listingSchema);
 module.exports = Listing;

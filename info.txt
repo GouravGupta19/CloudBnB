@@ -1,8 +1,109 @@
-Validations:
+o Validations:
 1)client side: ensure data going from frontend to the db/backend is in correct format
 2)server side: db schema is maintained and error handling
 
-Form Validations(client):
+o Form Validations(client):
 when we enter data in the form, the browser and/or the web server will check to see that the data is in correct format
 and within the constraints set by the application.
 
+o Cookies- Web Cookies:
+HTTP Cookies are small blocks of data created by a web server while a user is browsing a website
+and placed on the user's computer or other device by the user's web browser
+
+app.get("/getcookies",(req,res)=>{
+    res.cookie("greet","hello");    //name->greet,val->hello
+    res.cookie("madeIn","India");
+    res.cookie("name","gourav");
+    res.send("sent you some Cookies!");
+});
+
+//install-> cookie-parser package-> npm i cookie-parser
+const cookieParser= require("cookie-parser");
+app.use(cookieParser());
+
+app.get("/getcookies",(req,res)=>{
+    console.log(req.cookies);
+    res.send("got the cookies!");
+});
+
+app.get("/greet",(req,res)=>{
+    let { name = "anonymous" } = req.cookies;
+    //if cookie with name-value pair-> {"name","..."} is not found then -> Hi anonymous, will be printed
+    res.send(`Hi, ${name}`);    //Hi gourav
+});
+
+//Signed Cookies
+->Send Signed cookie
+app.use(cookieParser("secretcode"));
+// now the value of the signed cookie will be encoded
+
+app.get("/getsignedcookie", (req,res)=>{
+    res.cookie("color", "red", {signed: true});
+    res.send("done!");
+});
+
+->Verify Signed Cookie
+app.get("/verify",(req,res)=>{
+    //console.log(req.cookies); -> for unsigned cookies
+    console.log(req.signedCookies); // for signed cookies
+    //if the signed cookies are tampered then the value printed will be false/empty
+    res.send("verified");
+});
+
+
+o State:
+Stateful Protocol: require server to save the status and session information. eg., ftp.
+Stateless Protocol: doesn't require the server info or status. eg., HTTP.
+(status: info about the request, session info: all info about client-server interaction)
+
+o Express Sessions: An attempt to make our session stateful
+npm i express-session
+const session = require("express-session");
+app.use(session({ secret: "mysupersecretstring", resave: false, saveUninitialized: true }));
+app.get("/test",(req,res)=>{
+    res.send("test successful!");
+});
+//now with kind of request a cookie will be saved in our browser in the form of a cookie 
+app.get("/reqcount", (req,res)=>{
+    if(req.session.count){
+        req.session.count++;
+    }else{
+        req.session.count=1;
+        // a new count variable is created inside req.session object
+    }
+    res.send(`you sent a request ${req.session.count} times`);
+});
+
+//Storing using session
+app.get("/register",(req,res)=>{
+    let {name = "anonymous" } = req.query;
+    req.session.name=name;
+    //console.log(req.session);
+    //res.send(name);
+    res.redirect("/hello");
+});
+app.get("/hello", (req,res)=>{
+    res.send(`hello ${req.session.name}`);
+});
+
+
+//connect-flash -> npm i connect-flash
+the flash is a special area of the session used for Storing messages.
+messages are written to the flash and cleared after being displayed 
+to the user.flash is typically used in combination with redirects.
+
+const flash= require("connect-flash");
+app.use(flash());
+app.get("/register",(req,res)=>{
+    let {name = "anonymous" } = req.query;
+    req.session.name=name;
+    req.flash("success","user registered successfully!");
+    res.redirect("/hello");
+});
+app.get("/hello", (req,res)=>{
+    //console.log(req.flash("success"));
+    //res.render("random_page.ejs",{ name: req.session.name , msg: req.flash("success") });
+    res.locals.messages = req.flash("success");
+    res.render("random_page.ejs",{ name: req.session.name });
+    // we can access the flash message in our templates with name simply as, "message"
+});

@@ -22,4 +22,4 @@
 })();
 //client side validation
 //taken from boot strap for form validation purposes
-// in whatever input just give , class="needs-validation" novalidate
+// in whatever form just give , class="needs-validation" novalidate
