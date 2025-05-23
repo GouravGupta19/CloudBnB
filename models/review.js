@@ -12,6 +12,12 @@ const reviewSchema = new Schema({
     type: Date,
     default: Date.now(),
   },
+  author: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
+  },
 });
+
+//before adding a review always check that if the user is logged in or not
 
 module.exports = mongoose.model("Review", reviewSchema);

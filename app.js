@@ -17,8 +17,13 @@ const Review = require("./models/review.js");
 const wrapAsync = require("./utils/wrapAsync.js");
 const ExpressEror = require("./utils/ExpressError.js");
 
-const listings = require("./routes/listing.js");
-const reviews = require("./routes/review.js");
+const passport = require("passport");
+const LocalStrategy = require("passport-local");
+const User = require("./models/user.js");
+
+const listingRouter = require("./routes/listing.js");
+const reviewRouter = require("./routes/review.js");
+const userRouter = require("./routes/user.js");
 
 const MONGO_URL = "mongodb://127.0.0.1:27017/wanderlust";
 async function main() {
@@ -67,14 +72,35 @@ app.use(cookieParser());
 app.use(session(sessionOptions));
 app.use(flash());
 
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new LocalStrategy(User.authenticate()));
+//use static authenticate method of model in LocalStrategy
+
+// use static serialize and deserialize of model for passport session support
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
 app.use((req, res, next) => {
   res.locals.success = req.flash("success");
   res.locals.error = req.flash("error");
+  res.locals.curUser = req.user; //to use it in "navbar.ejs", to check if the user is loggedIn or not
+  //and we can't access re.user directly in "navbar.ejs"
   //console.log(res.locals.success);
   next();
 });
 
-//these things should be written before routes
+//these things should be written before routes coz these are middlewares
+
+// app.get("/demouser", async (req, res) => {
+//   let fakeUser = new User({
+//     email: "student@gmail.com",
+//     username: "delta-student",
+//   });
+//   let registeredUser = await User.register(fakeUser, "helloworld");
+//   res.send(registeredUser);
+//   //this user will be saved in db,with pass="helloworld", and username will be unique
+// });
 
 // const validateListing = (req, res, next) => {
 //   //validating listing using joi
@@ -101,11 +127,12 @@ app.use((req, res, next) => {
 //   }
 // };
 
-app.use("/listings", listings);
+app.use("/listings", listingRouter);
 //insted of using all the '/listings' routes now we are using only this line
-app.use("/listings/:id/reviews", reviews);
+app.use("/listings/:id/reviews", reviewRouter);
 //insted of using all the '/listings/:id/reviews' routes now we are using only this line
 // hence all the routes are converted into just 2 lines-> code modularity increased
+app.use("/", userRouter);
 
 // //Index Route
 // app.get(

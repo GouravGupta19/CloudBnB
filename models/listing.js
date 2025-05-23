@@ -12,14 +12,8 @@ const listingSchema = new Schema({
     type: String,
   },
   image: {
-    type: String,
-    default:
-      "https://images.unsplash.com/photo-1655322547902-95c676f71c57?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    set: (v) =>
-      v === ""
-        ? "https://images.unsplash.com/photo-1655322547902-95c676f71c57?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-        : v,
-    //if v is empty str then this string is assigned
+    url: String,
+    filename: String,
   },
   price: {
     type: Number,
@@ -37,6 +31,10 @@ const listingSchema = new Schema({
       ref: "Review",
     },
   ],
+  owner: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
+  },
 });
 
 //adding post mongoose middleware,so that, when we delete this listing then

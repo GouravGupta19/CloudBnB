@@ -100,6 +100,12 @@ body {
     border: none !important;
 }
 
+.mb-3 img {
+  width: 100%; /* Makes image fit within the div */
+  height: auto;
+  display: block;
+}
+
 /* show.ejs styling */
 .show-img{
     height: 30vh;
@@ -111,4 +117,11 @@ body {
 .show-card{
     padding-left: 0;
     padding-right: 0;
+}
+
+
+/*MAP*/
+#map{
+  height: 400px;
+  width: 80vh;
 }

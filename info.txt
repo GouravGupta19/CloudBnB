@@ -107,3 +107,29 @@ app.get("/hello", (req,res)=>{
     res.render("random_page.ejs",{ name: req.session.name });
     // we can access the flash message in our templates with name simply as, "message"
 });
+
+///////////////////////////////////////////////
+
+Passport:
+is middleware for Node.js that makes it easy to implement authentication and authorization.
+npm i passport
+npm i passport-local
+npm i passport-local-mongoose
+
+passport.initialize()
+A middleware that initialize passport.
+
+passport.session()
+A web application needs the ability to identify users as they browse from 
+page to page. This series of requests and responses, each associated with
+the same user, is known as a session.
+
+passport.use(new LocalStrategy(User.authenticate())) 
+
+/////////////////////////////////////////////////
+MVC: Model(db core functionality), View(frontend core functionality),Controller(backend core functionality)
+////////////////////////////////////////////////
+
+Router.route
+a way to group together routes with different verbs but same paths
+
