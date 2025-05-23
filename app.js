@@ -26,8 +26,10 @@ const reviewRouter = require("./routes/review.js");
 const userRouter = require("./routes/user.js");
 
 const MONGO_URL = "mongodb://127.0.0.1:27017/wanderlust";
+const dbUrl = process.env.ATLASDB_URL;
+//database is not connected to our local DB it is now connected to online DB
 async function main() {
-  await mongoose.connect(MONGO_URL);
+  await mongoose.connect(dbUrl);
 }
 main()
   .then(() => {
@@ -55,11 +57,24 @@ app.get("/", (req, res) => {
 
 const cookieParser = require("cookie-parser");
 const session = require("express-session");
+const MongoStore = require("connect-mongo");
+//MongoStore is used to store session data in online DB, making sessions persistent, scalable, and production-ready.
 const flash = require("connect-flash");
 //we are making our protocol stateful,i.e.,trying to save our sessions, using cookies
 //mtlb when we switch pages we can save session info in our browser,so that we can access it in future in some other pages
+const store = MongoStore.create({
+  mongoUrl: dbUrl,
+  crypto: {
+    secret: process.env.SECRET,
+  },
+  touchAfter: 24 * 3600,
+});
+store.on("error", () => {
+  console.log("Error in mongo session store", err);
+});
 const sessionOptions = {
-  secret: "mysupersecretstring",
+  store:store,
+  secret: process.env.SECRET,
   resave: false,
   saveUninitialized: true,
   cookie: {
@@ -68,6 +83,7 @@ const sessionOptions = {
     httpOnly: true, //security purposes
   },
 };
+
 app.use(cookieParser());
 app.use(session(sessionOptions));
 app.use(flash());
@@ -87,6 +103,7 @@ app.use((req, res, next) => {
   res.locals.curUser = req.user; //to use it in "navbar.ejs", to check if the user is loggedIn or not
   //and we can't access re.user directly in "navbar.ejs"
   //console.log(res.locals.success);
+  //console.log(res.locals.curUser);
   next();
 });
 
