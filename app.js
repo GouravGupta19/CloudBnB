@@ -46,14 +46,14 @@ app.use(express.static(path.join(__dirname, "/public")));
 
 app.use(express.urlencoded({ extended: true }));
 
+
+
 let port = 8080;
 app.listen(port, () => {
   console.log(`we are live on port ${port}`);
 });
 
-app.get("/", (req, res) => {
-  res.send("I m root");
-});
+
 
 const cookieParser = require("cookie-parser");
 const session = require("express-session");
@@ -100,14 +100,23 @@ passport.deserializeUser(User.deserializeUser());
 app.use((req, res, next) => {
   res.locals.success = req.flash("success");
   res.locals.error = req.flash("error");
-  res.locals.curUser = req.user; //to use it in "navbar.ejs", to check if the user is loggedIn or not
-  //and we can't access re.user directly in "navbar.ejs"
+  res.locals.curUser = req.user; 
+  //to use it in "navbar.ejs", to check if the user is loggedIn or not
+  //and we can't access req.user directly in "navbar.ejs"
   //console.log(res.locals.success);
   //console.log(res.locals.curUser);
   next();
 });
 
+
+
 //these things should be written before routes coz these are middlewares
+
+app.get("/", (req, res) => {
+  res.send("I m root");
+  res.redirect("/listings");
+});
+
 
 // app.get("/demouser", async (req, res) => {
 //   let fakeUser = new User({
